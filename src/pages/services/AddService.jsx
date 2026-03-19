@@ -384,7 +384,7 @@ const IconPickerModal = ({ value, onChange, onClose }) => {
           </div>
         </div>
 
-        {/* Category pills */}
+        {/* Category pills — FIX: merged duplicate className into one */}
         <div className="flex gap-1.5 px-6 py-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {ICON_CATEGORIES.map((cat) => {
             const isActive = category === cat;
@@ -392,16 +392,10 @@ const IconPickerModal = ({ value, onChange, onClose }) => {
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className="shrink-0 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] font-mono transition-all"
-                style={
-                  isActive
-                    ? { background: "var(--brand)", color: "var(--brand-fg)" }
-                    : {}
-                }
                 className={`shrink-0 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] font-mono transition-all ${
-                  !isActive
-                    ? "bg-secondary text-muted-foreground hover:text-foreground"
-                    : ""
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -429,6 +423,7 @@ const IconPickerModal = ({ value, onChange, onClose }) => {
               {filtered.map((icon) => {
                 const isSelected = value === icon.name;
                 return (
+                  // FIX: merged duplicate className + style into single className
                   <motion.button
                     key={icon.name}
                     type="button"
@@ -439,21 +434,10 @@ const IconPickerModal = ({ value, onChange, onClose }) => {
                       onChange(icon.name);
                       onClose();
                     }}
-                    className="aspect-square flex items-center justify-center rounded-xl text-base border transition-all"
-                    style={
-                      isSelected
-                        ? {
-                            background: "var(--brand)",
-                            color: "var(--brand-fg)",
-                            borderColor: "transparent",
-                            boxShadow: "0 0 12px var(--brand-glow)",
-                          }
-                        : {}
-                    }
                     className={`aspect-square flex items-center justify-center rounded-xl text-base border transition-all ${
-                      !isSelected
-                        ? "bg-secondary border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                        : ""
+                      isSelected
+                        ? "bg-primary text-primary-foreground border-transparent shadow-[0_0_12px_var(--brand-glow,theme(colors.primary.DEFAULT/30%))]"
+                        : "bg-secondary border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
                     }`}
                   >
                     {icon.component}
@@ -479,7 +463,7 @@ const PreviewCard = ({ title, description, tags, iconName }) => (
     {/* Ambient glow */}
     <div className="absolute -top-16 -right-16 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-    <div className="mb-6 w-13 h-13 rounded-2xl bg-secondary border border-border flex items-center justify-center text-xl text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-300 w-12 h-12">
+    <div className="mb-6 w-12 h-12 rounded-2xl bg-secondary border border-border flex items-center justify-center text-xl text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-300">
       <IconRenderer name={iconName} />
     </div>
 
@@ -652,10 +636,11 @@ const AddService = () => {
                 >
                   {/* Selected icon */}
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 text-brand-fg"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 text-primary-foreground"
                     style={{
-                      background: "var(--brand)",
-                      boxShadow: "0 2px 10px var(--brand-glow)",
+                      background: "var(--brand, var(--primary))",
+                      boxShadow:
+                        "0 2px 10px var(--brand-glow, rgb(0 0 0 / 0.15))",
                     }}
                   >
                     <IconRenderer name={selectedIcon} />
@@ -674,37 +659,30 @@ const AddService = () => {
                   />
                 </motion.button>
 
-                {/* Icon preview row — show nearby icons */}
+                {/* Icon preview row — FIX: merged duplicate className + style into single className */}
                 <div className="flex gap-1.5 px-1">
-                  {ICON_REGISTRY.slice(0, 8).map((icon) => (
-                    <motion.button
-                      key={icon.name}
-                      type="button"
-                      whileHover={{ scale: 1.15 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() =>
-                        setValue("icon", icon.name, { shouldDirty: true })
-                      }
-                      title={icon.name}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm border transition-all"
-                      style={
-                        selectedIcon === icon.name
-                          ? {
-                              background: "var(--brand)",
-                              color: "var(--brand-fg)",
-                              borderColor: "transparent",
-                            }
-                          : {}
-                      }
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm border transition-all ${
-                        selectedIcon !== icon.name
-                          ? "bg-secondary border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                          : ""
-                      }`}
-                    >
-                      {icon.component}
-                    </motion.button>
-                  ))}
+                  {ICON_REGISTRY.slice(0, 8).map((icon) => {
+                    const isSelected = selectedIcon === icon.name;
+                    return (
+                      <motion.button
+                        key={icon.name}
+                        type="button"
+                        whileHover={{ scale: 1.15 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() =>
+                          setValue("icon", icon.name, { shouldDirty: true })
+                        }
+                        title={icon.name}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm border transition-all ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-transparent"
+                            : "bg-secondary border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                        }`}
+                      >
+                        {icon.component}
+                      </motion.button>
+                    );
+                  })}
                   <button
                     type="button"
                     onClick={() => setPickerOpen(true)}
@@ -863,9 +841,7 @@ const AddService = () => {
 
             <div className="p-5 rounded-2xl bg-secondary/30 border border-border">
               <p className="text-[10px] leading-relaxed text-muted-foreground/60 font-mono">
-                <span className="font-black" style={{ color: "var(--brand)" }}>
-                  Note:
-                </span>{" "}
+                <span className="font-black text-primary">Note:</span>{" "}
                 Publishing will update your public Services section instantly.
                 Ensure tags are correctly spelled for SEO.
               </p>
