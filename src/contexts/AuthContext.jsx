@@ -10,7 +10,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API_BASE =
-  import.meta.env.VITE_API_URL || "https://themiahshohag.vercel.app/";
+  import.meta.env.VITE_API_URL || "https://shohagmiah-portfolio-server.vercel.app";
 
 // ═══════════════════════════════════════════════════════════════
 //  AXIOS INSTANCE
