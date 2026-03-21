@@ -11,42 +11,20 @@ import {
   FiCode,
   FiInfo,
   FiLayers,
-  FiBold,
-  FiItalic,
-  FiList,
   FiLink,
-  FiCode as FiInlineCode,
 } from "react-icons/fi";
-import {
-  LuHeading2,
-  LuHeading3,
-  LuListOrdered,
-  LuLoader,
-  LuSeparatorHorizontal,
-  LuUndo2,
-  LuRedo2,
-  LuRotateCcw,
-} from "react-icons/lu";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { LuHeading2, LuLoader, LuRotateCcw } from "react-icons/lu";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import PageHeader from "../../components/shared/PageHeader";
+import RichTextEditor from "../../components/shared/RichTextEditor"; // ✅ Reusable
 
 // ═══════════════════════════════════════════════════════════════
 //  CONFIG
 // ═══════════════════════════════════════════════════════════════
-const API_BASE =
-  import.meta.env.VITE_API_URL || "https://themiahshohag.vercel.app/";
+const API_BASE = import.meta.env.VITE_API_URL; // ✅ Fixed — no fallback needed
 const CATEGORIES = ["Full Stack", "Frontend", "Backend"];
 const STATUSES = ["published", "pending", "draft"];
-
-// Status chart var map — no hardcoded colors
-const STATUS_CHART = {
-  published: "--chart-2",
-  pending: "--chart-3",
-  draft: "--muted-foreground",
-};
 
 // ═══════════════════════════════════════════════════════════════
 //  SLUG HELPER
@@ -131,157 +109,6 @@ const SectionCard = ({ icon: Icon, title, tag, children }) => (
 );
 
 // ═══════════════════════════════════════════════════════════════
-//  TIPTAP TOOLBAR BUTTON
-// ═══════════════════════════════════════════════════════════════
-const ToolbarBtn = ({ onClick, active, title, children }) => (
-  <button
-    type="button"
-    onMouseDown={(e) => {
-      e.preventDefault();
-      onClick();
-    }}
-    title={title}
-    className={`p-1.5 rounded-lg text-sm transition-all ${
-      active
-        ? "bg-primary text-primary-foreground"
-        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-    }`}
-  >
-    {children}
-  </button>
-);
-
-const ToolbarDivider = () => (
-  <div className="w-px h-4 bg-border self-center mx-0.5" />
-);
-
-// ═══════════════════════════════════════════════════════════════
-//  TIPTAP TOOLBAR
-// ═══════════════════════════════════════════════════════════════
-const EditorToolbar = ({ editor }) => {
-  if (!editor) return null;
-  return (
-    <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-border bg-secondary/50">
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        active={editor.isActive("bold")}
-        title="Bold"
-      >
-        {" "}
-        <FiBold size={13} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        active={editor.isActive("italic")}
-        title="Italic"
-      >
-        {" "}
-        <FiItalic size={13} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleCode().run()}
-        active={editor.isActive("code")}
-        title="Inline Code"
-      >
-        <FiInlineCode size={13} />
-      </ToolbarBtn>
-      <ToolbarDivider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        active={editor.isActive("heading", { level: 2 })}
-        title="H2"
-      >
-        <LuHeading2 size={14} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        active={editor.isActive("heading", { level: 3 })}
-        title="H3"
-      >
-        <LuHeading3 size={14} />
-      </ToolbarBtn>
-      <ToolbarDivider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        active={editor.isActive("bulletList")}
-        title="Bullet List"
-      >
-        {" "}
-        <FiList size={13} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        active={editor.isActive("orderedList")}
-        title="Ordered List"
-      >
-        <LuListOrdered size={13} />
-      </ToolbarBtn>
-      <ToolbarDivider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-        active={editor.isActive("codeBlock")}
-        title="Code Block"
-      >
-        <FiCode size={13} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        active={false}
-        title="Divider"
-      >
-        {" "}
-        <LuSeparatorHorizontal size={13} />
-      </ToolbarBtn>
-      <ToolbarDivider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().undo().run()}
-        active={false}
-        title="Undo"
-      >
-        <LuUndo2 size={13} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().redo().run()}
-        active={false}
-        title="Redo"
-      >
-        <LuRedo2 size={13} />
-      </ToolbarBtn>
-    </div>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════
-//  RICH TEXT EDITOR
-// ═══════════════════════════════════════════════════════════════
-const RichTextEditor = ({ value, onChange, hasError }) => {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: value || "",
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
-    editorProps: {
-      attributes: {
-        class:
-          "prose prose-sm max-w-none focus:outline-none min-h-[160px] px-4 py-3 text-foreground",
-      },
-    },
-  });
-
-  return (
-    <div
-      className={`rounded-xl border overflow-hidden transition-all duration-200
-        focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary
-        ${hasError ? "border-destructive/60" : "border-border hover:border-primary/30"}`}
-    >
-      <EditorToolbar editor={editor} />
-      <div className="bg-secondary text-sm min-h-[160px]">
-        <EditorContent editor={editor} />
-      </div>
-    </div>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════
 //  IMAGE UPLOAD ZONE
 // ═══════════════════════════════════════════════════════════════
 const ImageUploadZone = ({ preview, onFileChange, onClear, fileInputRef }) => (
@@ -305,8 +132,7 @@ const ImageUploadZone = ({ preview, onFileChange, onClear, fileInputRef }) => (
           style={{
             color: "var(--chart-2)",
             borderColor: "color-mix(in oklch, var(--chart-2) 25%, transparent)",
-            backgroundColor:
-              "color-mix(in oklch, var(--chart-2) 8%, transparent)",
+            backgroundColor: "color-mix(in oklch, var(--chart-2) 8%, transparent)",
           }}
         >
           Uploaded
@@ -363,27 +189,6 @@ const ImageUploadZone = ({ preview, onFileChange, onClear, fileInputRef }) => (
       </label>
     </div>
   </motion.div>
-);
-
-// ═══════════════════════════════════════════════════════════════
-//  LOADING SCREEN
-// ═══════════════════════════════════════════════════════════════
-const LoadingScreen = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
-    <div className="relative">
-      <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-        <LuLoader className="animate-spin text-primary" size={22} />
-      </div>
-      <motion.div
-        className="absolute inset-0 rounded-2xl border border-primary/30"
-        animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      />
-    </div>
-    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 font-mono animate-pulse">
-      Deploying...
-    </p>
-  </div>
 );
 
 // ═══════════════════════════════════════════════════════════════
@@ -488,11 +293,7 @@ const AddProject = () => {
         {/* ── Page Header ──────────────────────────────────── */}
         <PageHeader title="Add New Project" />
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           {/* ── Thumbnail Upload ─────────────────────────── */}
           <ImageUploadZone
             preview={preview}
@@ -504,11 +305,7 @@ const AddProject = () => {
           {/* ── Identity & Path ──────────────────────────── */}
           <SectionCard icon={FiInfo} title="Identity & Path" tag="Required">
             <div className="grid sm:grid-cols-2 gap-4">
-              <FormField
-                label="Project Title"
-                required
-                error={errors.title?.message}
-              >
+              <FormField label="Project Title" required error={errors.title?.message}>
                 <input
                   {...register("title", { required: "Title is required" })}
                   placeholder="e.g. Quantum Analytics Suite"
@@ -534,90 +331,60 @@ const AddProject = () => {
           {/* ── Classification ───────────────────────────── */}
           <SectionCard icon={FiLayers} title="Classification" tag="Required">
             <div className="grid sm:grid-cols-2 gap-4">
-              <FormField
-                label="Category"
-                required
-                error={errors.category?.message}
-              >
+              <FormField label="Category" required error={errors.category?.message}>
                 <div className="relative">
                   <select
-                    {...register("category", {
-                      required: "Please select a category",
-                    })}
+                    {...register("category", { required: "Please select a category" })}
                     className={`${inputCls(!!errors.category)} appearance-none cursor-pointer pr-9`}
                   >
-                    <option value="" disabled>
-                      Select category...
-                    </option>
+                    <option value="" disabled>Select category...</option>
                     {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
+                      <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
-                  <LuHeading2
-                    size={13}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none"
-                  />
+                  <LuHeading2 size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none" />
                 </div>
               </FormField>
 
               <FormField label="Status" required error={errors.status?.message}>
                 <div className="relative">
                   <select
-                    {...register("status", {
-                      required: "Please select a status",
-                    })}
+                    {...register("status", { required: "Please select a status" })}
                     className={`${inputCls(!!errors.status)} appearance-none cursor-pointer pr-9`}
                   >
-                    <option value="" disabled>
-                      Select status...
-                    </option>
+                    <option value="" disabled>Select status...</option>
                     {STATUSES.map((s) => (
-                      <option key={s} value={s} className="capitalize">
-                        {s}
-                      </option>
+                      <option key={s} value={s} className="capitalize">{s}</option>
                     ))}
                   </select>
-                  <LuHeading2
-                    size={13}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none"
-                  />
+                  <LuHeading2 size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none" />
                 </div>
               </FormField>
             </div>
           </SectionCard>
 
-          {/* ── Description ──────────────────────────────── */}
+          {/* ── Description ── ✅ Using reusable RichTextEditor */}
           <SectionCard icon={FiCode} title="Project Description" tag="Required">
-            <div className="space-y-3">
-              <FormField
-                label="Description"
-                required
-                error={errors.description?.message}
-              >
-                <Controller
-                  name="description"
-                  control={control}
-                  rules={{
-                    required: "Description is required",
-                    validate: (val) =>
-                      (val && val !== "<p></p>") || "Description is required",
-                  }}
-                  render={({ field }) => (
-                    <RichTextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                      hasError={!!errors.description}
-                    />
-                  )}
-                />
-              </FormField>
-              <p className="text-[9px] text-muted-foreground/40 font-mono ml-0.5">
-                Supports <strong className="text-foreground/60">bold</strong>,{" "}
-                <em>italic</em>, headings, lists & code blocks
-              </p>
-            </div>
+            <FormField label="Description" required error={errors.description?.message}>
+              <Controller
+                name="description"
+                control={control}
+                rules={{
+                  required: "Description is required",
+                  validate: (val) =>
+                    (val && val !== "<p></p>") || "Description is required",
+                }}
+                render={({ field }) => (
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!errors.description}
+                    placeholder="Describe your project in detail..."
+                    minHeight="160px"
+                  />
+                )}
+              />
+            </FormField>
           </SectionCard>
 
           {/* ── Technologies ─────────────────────────────── */}
@@ -640,9 +407,7 @@ const AddProject = () => {
                       }`}
                     >
                       <input
-                        {...register(`technologies.${index}.value`, {
-                          required: "Required",
-                        })}
+                        {...register(`technologies.${index}.value`, { required: "Required" })}
                         placeholder="e.g. React"
                         className="bg-transparent text-xs font-medium focus:outline-none w-20 text-foreground placeholder:text-muted-foreground/40"
                       />
@@ -676,46 +441,24 @@ const AddProject = () => {
           </SectionCard>
 
           {/* ── Source & Live ────────────────────────────── */}
-          <SectionCard
-            icon={FiExternalLink}
-            title="Source & Live"
-            tag="Required"
-          >
+          <SectionCard icon={FiExternalLink} title="Source & Live" tag="Required">
             <div className="grid sm:grid-cols-2 gap-4">
-              <FormField
-                label="Repository Link"
-                required
-                error={errors.githubRepo?.message}
-              >
+              <FormField label="Repository Link" required error={errors.githubRepo?.message}>
                 <div className="relative">
-                  <FiGithub
-                    size={13}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none"
-                  />
+                  <FiGithub size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none" />
                   <input
-                    {...register("githubRepo", {
-                      required: "GitHub link is required",
-                    })}
+                    {...register("githubRepo", { required: "GitHub link is required" })}
                     placeholder="github.com/username/repo"
                     className={`${inputCls(!!errors.githubRepo)} pl-9`}
                   />
                 </div>
               </FormField>
 
-              <FormField
-                label="Live URL"
-                required
-                error={errors.liveLink?.message}
-              >
+              <FormField label="Live URL" required error={errors.liveLink?.message}>
                 <div className="relative">
-                  <FiLink
-                    size={13}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none"
-                  />
+                  <FiLink size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none" />
                   <input
-                    {...register("liveLink", {
-                      required: "Live link is required",
-                    })}
+                    {...register("liveLink", { required: "Live link is required" })}
                     placeholder="project-demo.vercel.app"
                     className={`${inputCls(!!errors.liveLink)} pl-9`}
                   />
@@ -731,22 +474,18 @@ const AddProject = () => {
             transition={{ delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 rounded-2xl border border-border bg-card"
           >
-            {/* Status indicator */}
             <div className="flex items-center gap-2.5">
               <motion.div
                 animate={isDirty ? { scale: [1, 1.3, 1] } : {}}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="w-2 h-2 rounded-full"
-                style={{
-                  background: isDirty ? "var(--chart-3)" : "var(--chart-2)",
-                }}
+                style={{ background: isDirty ? "var(--chart-3)" : "var(--chart-2)" }}
               />
               <span className="text-[9px] font-black uppercase tracking-widest font-mono text-muted-foreground/50">
                 {isDirty ? "Payload modified" : "System ready"}
               </span>
             </div>
 
-            {/* Action buttons */}
             <div className="flex items-center gap-3">
               <AnimatePresence>
                 {isDirty && (
@@ -771,18 +510,12 @@ const AddProject = () => {
                 whileTap={!isSubmitting ? { scale: 0.97 } : {}}
                 className="relative flex items-center gap-2.5 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest font-mono shadow-lg transition-all overflow-hidden disabled:opacity-50"
               >
-                {/* Shimmer */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
                 <span className="relative z-10 flex items-center gap-2">
                   {isSubmitting ? (
-                    <>
-                      <LuLoader size={13} className="animate-spin" />{" "}
-                      Deploying...
-                    </>
+                    <><LuLoader size={13} className="animate-spin" /> Deploying...</>
                   ) : (
-                    <>
-                      <FiSave size={13} /> Deploy Project
-                    </>
+                    <><FiSave size={13} /> Deploy Project</>
                   )}
                 </span>
               </motion.button>
