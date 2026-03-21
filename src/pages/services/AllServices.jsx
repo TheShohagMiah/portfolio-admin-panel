@@ -19,6 +19,8 @@ import axios from "axios";
 import DeleteModal from "../../components/shared/DeleteModal";
 import PageHeader from "../../components/shared/PageHeader";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 // ═══════════════════════════════════════════════════════════════
 //  ICON RENDERER
 // ═══════════════════════════════════════════════════════════════
@@ -126,7 +128,7 @@ const AllServices = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        "https://themiahshohag.vercel.app//api/services",
+        `${API_BASE}/api/services`, 
         {
           params: { page, limit, sortBy, order, ...(search && { search }) },
           withCredentials: true,
@@ -166,7 +168,7 @@ const AllServices = () => {
     setOpenDeleteModal(null);
     try {
       const { data } = await axios.delete(
-        `https://themiahshohag.vercel.app//api/services/${id}`,
+        `${API_BASE}/api/services/${id}`, // ✅ Fixed
         { withCredentials: true },
       );
       if (data.success) {
@@ -297,7 +299,6 @@ const AllServices = () => {
                         {/* Service identity */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
-                            {/* Icon box */}
                             <div className="w-11 h-11 rounded-xl bg-secondary border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-200 flex-shrink-0">
                               <IconRenderer
                                 name={service.icon}
