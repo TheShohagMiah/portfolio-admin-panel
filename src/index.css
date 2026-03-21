@@ -63,8 +63,6 @@
 
 /* ══════════════════════════════════════════
    LIGHT MODE
-   Brand hue: 259.05 (blue), lightness lowered
-   so it reads clearly on white backgrounds.
 ══════════════════════════════════════════ */
 :root {
   --radius: 0.625rem;
@@ -101,24 +99,16 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Logo Background - Light Mode */
-
-  /* ── Brand — light mode (blue, hue 259.05) ──
-     Lightness pulled down to ~46% so the blue
-     has enough contrast on a white background
-     (WCAG AA: ~4.6:1).                         */
   --brand:            oklch(46% 0.21664 259.05);
-  --brand-foreground: oklch(1 0 0);                       /* white text on brand bg   */
-  --brand-muted:      oklch(46% 0.21664 259.05 / 0.10);  /* subtle tint background   */
-  --brand-border:     oklch(46% 0.21664 259.05 / 0.25);  /* tinted border            */
-  --brand-glow:       oklch(46% 0.21664 259.05 / 0.18);  /* shadow / glow            */
-  --brand-soft:       oklch(40% 0.20 259.05);            /* darker text on light bg  */
+  --brand-foreground: oklch(1 0 0);
+  --brand-muted:      oklch(46% 0.21664 259.05 / 0.10);
+  --brand-border:     oklch(46% 0.21664 259.05 / 0.25);
+  --brand-glow:       oklch(46% 0.21664 259.05 / 0.18);
+  --brand-soft:       oklch(40% 0.20 259.05);
 }
 
 /* ══════════════════════════════════════════
    DARK MODE
-   Brand hue: 259.05 (blue), lightness raised
-   so it pops clearly on a dark background.
 ══════════════════════════════════════════ */
 .dark {
   --background: oklch(19.125% 0.00002 271.152);
@@ -153,17 +143,12 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  /* Logo Background - Dark Mode */
-
-  /* ── Brand — dark mode (blue, hue 259.05) ──
-     Original value kept; brighter lightness
-     ensures visibility on dark surfaces.       */
   --brand:            oklch(55.779% 0.21664 259.05);
   --brand-foreground: oklch(1 0 0);
   --brand-muted:      oklch(55.779% 0.21664 259.05 / 0.14);
   --brand-border:     oklch(55.779% 0.21664 259.05 / 0.30);
   --brand-glow:       oklch(55.779% 0.21664 259.05 / 0.24);
-  --brand-soft:       oklch(72% 0.18 259.05);            /* lighter text on dark bg  */
+  --brand-soft:       oklch(72% 0.18 259.05);
 }
 
 /* ══════════════════════════════════════════
@@ -175,8 +160,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* font-family: "IBM Plex Mono", monospace; */
-    /* font-family: "Fira Code", monospace; */
     font-family: 'Space Grotesk', sans-serif;
     font-optical-sizing: auto;
     font-feature-settings: 'cv11', 'ss01';
@@ -187,8 +170,6 @@
 
 /* ══════════════════════════════════════════
    BRAND UTILITY CLASSES
-   Use these instead of hardcoded color values
-   so light/dark both look great automatically.
 ══════════════════════════════════════════ */
 @layer utilities {
   .bg-brand            { background-color: var(--brand); }
@@ -205,4 +186,133 @@
   .hover\:text-brand-soft:hover { color: var(--brand-soft); }
   .hover\:border-brand:hover    { border-color: var(--brand-border); }
   .hover\:bg-brand-muted:hover  { background-color: var(--brand-muted); }
+}
+
+/* ══════════════════════════════════════════
+   TIPTAP EDITOR — .ProseMirror
+   Mirrors the editor content so what you
+   type looks exactly like the frontend output
+══════════════════════════════════════════ */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p {
+  margin-bottom: 0.75rem;
+  min-height: 1em;
+  line-height: 1.75;
+}
+.ProseMirror p:empty {
+  min-height: 1em;
+  margin-bottom: 0.75rem;
+}
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+.ProseMirror br {
+  display: block;
+  content: "";
+  margin-top: 0.5rem;
+}
+.ProseMirror h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+.ProseMirror h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.ProseMirror h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.ProseMirror ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.875rem;
+}
+.ProseMirror ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 0.875rem;
+}
+.ProseMirror li {
+  margin-bottom: 0.25rem;
+  line-height: 1.75;
+}
+.ProseMirror blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.ProseMirror strong { font-weight: 700; }
+.ProseMirror em { font-style: italic; }
+.ProseMirror u { text-decoration: underline; }
+.ProseMirror s { text-decoration: line-through; }
+.ProseMirror code {
+  font-size: 0.8rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.ProseMirror pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.ProseMirror hr {
+  margin: 1.25rem 0;
+  border-color: var(--border);
+}
+.ProseMirror a {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Placeholder ───────────────────────────────────────────── */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--muted-foreground);
+  opacity: 0.4;
+  float: left;
+  pointer-events: none;
+  height: 0;
+}
+
+/* ── Task list ─────────────────────────────────────────────── */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.ProseMirror ul[data-type="taskList"] li input[type="checkbox"] {
+  margin-top: 0.25rem;
+  cursor: pointer;
+  accent-color: var(--primary);
 }
