@@ -17,7 +17,7 @@ import { LuHeading2, LuLoader, LuRotateCcw } from "react-icons/lu";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import PageHeader from "../../components/shared/PageHeader";
-import RichTextEditor from "../../components/shared/RichTextEditor"; // ✅ Reusable
+import RichTextEditor from "../../components/Editor";
 
 // ═══════════════════════════════════════════════════════════════
 //  CONFIG
