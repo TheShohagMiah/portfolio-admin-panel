@@ -12,26 +12,15 @@ import {
   FiCode,
   FiInfo,
   FiLayers,
-  FiBold,
-  FiItalic,
-  FiList,
-  FiCode as FiInlineCode,
   FiArrowLeft,
 } from "react-icons/fi";
-import {
-  LuHeading2,
-  LuHeading3,
-  LuListOrdered,
-  LuLoader,
-  LuSeparatorHorizontal,
-  LuUndo2,
-  LuRedo2,
-} from "react-icons/lu";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { LuLoader } from "react-icons/lu";
 import { Field } from "../../components/shared/InputField";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import RichTextEditor from "../../components/Editor";
+
+const API_BASE = import.meta.env.VITE_API_URL;
 
 /* ─── Shared Styling ─────────────────────────────────────────── */
 const inputCls = (hasError) =>
@@ -49,154 +38,6 @@ const toSlug = (title = "") =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
-
-/* ─── TipTap Toolbar ─────────────────────────────────────────── */
-const ToolbarBtn = ({ onClick, active, title, children }) => (
-  <button
-    type="button"
-    onMouseDown={(e) => {
-      e.preventDefault();
-      onClick();
-    }}
-    title={title}
-    className={`p-2 rounded-lg text-sm transition-all
-      ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-      }`}
-  >
-    {children}
-  </button>
-);
-
-const Divider = () => <div className="w-px h-5 bg-border self-center mx-1" />;
-
-const EditorToolbar = ({ editor }) => {
-  if (!editor) return null;
-  return (
-    <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-border bg-secondary/40 rounded-t-2xl">
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        active={editor.isActive("bold")}
-        title="Bold (Ctrl+B)"
-      >
-        <FiBold size={14} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        active={editor.isActive("italic")}
-        title="Italic (Ctrl+I)"
-      >
-        <FiItalic size={14} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleCode().run()}
-        active={editor.isActive("code")}
-        title="Inline Code"
-      >
-        <FiInlineCode size={14} />
-      </ToolbarBtn>
-      <Divider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        active={editor.isActive("heading", { level: 2 })}
-        title="Heading 2"
-      >
-        <LuHeading2 size={15} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        active={editor.isActive("heading", { level: 3 })}
-        title="Heading 3"
-      >
-        <LuHeading3 size={15} />
-      </ToolbarBtn>
-      <Divider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        active={editor.isActive("bulletList")}
-        title="Bullet List"
-      >
-        <FiList size={14} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        active={editor.isActive("orderedList")}
-        title="Ordered List"
-      >
-        <LuListOrdered size={14} />
-      </ToolbarBtn>
-      <Divider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-        active={editor.isActive("codeBlock")}
-        title="Code Block"
-      >
-        <FiCode size={14} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        active={false}
-        title="Divider"
-      >
-        <LuSeparatorHorizontal size={14} />
-      </ToolbarBtn>
-      <Divider />
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().undo().run()}
-        active={false}
-        title="Undo"
-      >
-        <LuUndo2 size={14} />
-      </ToolbarBtn>
-      <ToolbarBtn
-        onClick={() => editor.chain().focus().redo().run()}
-        active={false}
-        title="Redo"
-      >
-        <LuRedo2 size={14} />
-      </ToolbarBtn>
-    </div>
-  );
-};
-
-/* ─── RichTextEditor ─────────────────────────────────────────── */
-const RichTextEditor = ({ value, onChange, hasError }) => {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: value || "",
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-    editorProps: {
-      attributes: {
-        class:
-          "prose prose-sm prose-invert max-w-none focus:outline-none min-h-[180px] px-4 py-3",
-      },
-    },
-  });
-
-  // ✅ Sync initial content when fetched data arrives
-  useEffect(() => {
-    if (editor && value && editor.isEmpty) {
-      editor.commands.setContent(value);
-    }
-  }, [value, editor]);
-
-  return (
-    <div
-      className={`rounded-2xl border overflow-hidden transition-all duration-200
-        focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary
-        ${hasError ? "border-destructive/50" : "border-border hover:border-primary/30"}`}
-    >
-      <EditorToolbar editor={editor} />
-      <div className="bg-secondary text-foreground text-sm">
-        <EditorContent editor={editor} />
-      </div>
-    </div>
-  );
-};
 
 /* ─── Section Header ─────────────────────────────────────────── */
 const SectionHeader = ({ icon, label }) => (
@@ -248,7 +89,6 @@ const EditProject = () => {
 
   const watchedTitle = watch("title");
 
-  // Auto-generate slug preview from title
   useEffect(() => {
     setValue("slug", toSlug(watchedTitle));
   }, [watchedTitle, setValue]);
@@ -257,10 +97,9 @@ const EditProject = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const res = await axios.get(
-          `https://themiahshohag.vercel.app//api/projects/${id}`,
-          { withCredentials: true },
-        );
+        const res = await axios.get(`${API_BASE}/api/projects/${id}`, {
+          withCredentials: true,
+        });
         if (res.data.success) {
           const p = res.data.data;
           reset({
@@ -271,13 +110,16 @@ const EditProject = () => {
             status: p.status || "draft",
             githubRepo: p.githubRepo || "",
             liveLink: p.liveLink || "",
-            // ✅ Convert flat string array → RHF fieldArray shape
             technologies: (p.technologies || []).map((t) => ({ value: t })),
           });
           setPreview(p.image?.url || null);
         }
-      } catch {
-        toast.error("Could not load project.");
+      } catch (err) {
+        console.error(
+          "Fetch project error:",
+          err.response?.data || err.message,
+        );
+        toast.error(err.response?.data?.message || "Could not load project.");
         navigate("/admin/projects");
       } finally {
         setFetching(false);
@@ -296,7 +138,6 @@ const EditProject = () => {
 
   const onSubmit = async (data) => {
     try {
-      // ✅ FIX: Derive slug from title — not from RHF state
       const slug = toSlug(data.title);
       const technologies = data.technologies
         .map((t) => t.value)
@@ -310,12 +151,11 @@ const EditProject = () => {
       formData.append("status", data.status);
       formData.append("githubRepo", data.githubRepo);
       formData.append("liveLink", data.liveLink);
-      // ✅ FIX: Send as technologies[] not JSON.stringify
       technologies.forEach((tech) => formData.append("technologies[]", tech));
       if (imageFile) formData.append("image", imageFile);
 
       const res = await axios.patch(
-        `https://themiahshohag.vercel.app//api/projects/${id}`,
+        `${API_BASE}/api/projects/${id}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -477,7 +317,6 @@ const EditProject = () => {
                 label="Classification"
               />
               <div className="grid sm:grid-cols-2 gap-8">
-                {/* ✅ FIX: Category field was missing from the original EditProject */}
                 <Field
                   label="Category"
                   required
@@ -520,37 +359,31 @@ const EditProject = () => {
               </div>
             </div>
 
-            {/* Section: Description — TipTap rich text */}
-            <div className="space-y-4">
-              <Field
-                label="Project Description"
-                required
-                error={errors.description?.message}
-              >
-                {/* ✅ FIX: Was a plain <textarea> — now TipTap so HTML renders correctly */}
-                <Controller
-                  name="description"
-                  control={control}
-                  rules={{
-                    required: "Description is required",
-                    validate: (val) =>
-                      (val && val !== "<p></p>") || "Description is required",
-                  }}
-                  render={({ field }) => (
-                    <RichTextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                      hasError={!!errors.description}
-                    />
-                  )}
-                />
-              </Field>
-              <p className="text-[11px] text-muted-foreground pl-1">
-                Supports{" "}
-                <strong className="text-foreground font-medium">bold</strong>,{" "}
-                <em>italic</em>, headings, lists, and code blocks.
-              </p>
-            </div>
+            {/* Section: Description ── ✅ Reusable RichTextEditor */}
+            <Field
+              label="Project Description"
+              required
+              error={errors.description?.message}
+            >
+              <Controller
+                name="description"
+                control={control}
+                rules={{
+                  required: "Description is required",
+                  validate: (val) =>
+                    (val && val !== "<p></p>") || "Description is required",
+                }}
+                render={({ field }) => (
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!errors.description}
+                    placeholder="Describe your project in detail..."
+                    minHeight="200px"
+                  />
+                )}
+              />
+            </Field>
 
             {/* Section: Technologies */}
             <Field

@@ -15,6 +15,7 @@ import SocialButton from "../../components/shared/SocialButton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../../validators/auth/authValidations";
 import { useAuth } from "../../contexts/AuthContext";
+import { FcGoogle } from "react-icons/fc";
 
 export const inputCls = (hasError) =>
   `w-full px-4 py-3 rounded-xl text-sm transition-all duration-200
@@ -223,8 +224,10 @@ const SignUp = () => {
               whileTap={{ scale: 0.99 }}
               disabled={isSubmitting}
               type="submit"
-              className="w-full bg-gray-900 text-white dark:bg-white dark:text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em]
-                         flex items-center justify-center gap-3 mt-4 hover:bg-primary dark:hover:bg-primary transition-all duration-300 disabled:opacity-50"
+              className="relative w-full overflow-hidden flex items-center justify-center gap-2.5
+                  py-3.5 rounded-xl bg-primary text-primary-foreground
+                  text-[10px] font-black uppercase tracking-widest font-mono
+                  shadow-lg transition-all duration-200 disabled:opacity-50 mt-2"
             >
               {isSubmitting ? (
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -249,7 +252,7 @@ const SignUp = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <SocialButton icon={<FiChrome />} label="Google" />
+            <SocialButton icon={<FcGoogle />} label="Google" />
             <SocialButton icon={<FiGithub />} label="GitHub" />
           </div>
 

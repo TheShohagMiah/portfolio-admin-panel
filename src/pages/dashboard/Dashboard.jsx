@@ -25,6 +25,8 @@ import { HiOutlineSparkles } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE = import.meta.env.VITE_API_URL; // ✅ Added
+
 // ═══════════════════════════════════════════════════════════════
 //  PARTICLE FIELD — uses CSS var colors
 // ═══════════════════════════════════════════════════════════════
@@ -74,7 +76,6 @@ const HoloCard = ({ children, className = "" }) => {
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       className={`relative overflow-hidden group ${className}`}
     >
-      {/* Shimmer layer — uses ring color */}
       <div className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[inherit] bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
       {children}
     </motion.div>
@@ -120,7 +121,7 @@ const AnimatedCounter = ({ value, loading, suffix = "" }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-//  SVG RING PROGRESS — uses chart-1 token
+//  SVG RING PROGRESS
 // ═══════════════════════════════════════════════════════════════
 const RingProgress = ({ value = 98 }) => {
   const r = 18;
@@ -155,7 +156,7 @@ const RingProgress = ({ value = 98 }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-//  SPARKLINE — uses CSS chart tokens
+//  SPARKLINE
 // ═══════════════════════════════════════════════════════════════
 const Sparkline = ({ chartVar = "--chart-2" }) => {
   const pts = Array.from({ length: 12 }, () => 20 + Math.random() * 36);
@@ -201,7 +202,7 @@ const Sparkline = ({ chartVar = "--chart-2" }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-//  STAT CARD CONFIG — only CSS vars, no hardcoded colors
+//  STAT CARD CONFIG
 // ═══════════════════════════════════════════════════════════════
 const STATS_CONFIG = [
   {
@@ -374,19 +375,15 @@ const Dashboard = () => {
     return () => clearInterval(t);
   }, []);
 
-  // Fetch API data
+  // ✅ Fetch API data using env var
   useEffect(() => {
     (async () => {
       try {
         const [v, td, p, s] = await Promise.all([
-          axios.get("https://themiahshohag.vercel.app//api/visitors/total"),
-          axios.get("https://themiahshohag.vercel.app//api/visitors/today"),
-          axios.get(
-            "https://themiahshohag.vercel.app//api/miscellaneous/total-projects",
-          ),
-          axios.get(
-            "https://themiahshohag.vercel.app//api/miscellaneous/total-services",
-          ),
+          axios.get(`${API_BASE}/api/visitors/total`),
+          axios.get(`${API_BASE}/api/visitors/today`),
+          axios.get(`${API_BASE}/api/miscellaneous/total-projects`),
+          axios.get(`${API_BASE}/api/miscellaneous/total-services`),
         ]);
         setDashData({
           totalVisitors: v.data.total,
@@ -401,11 +398,9 @@ const Dashboard = () => {
       }
     })();
 
-    // Track visitor
+    // ✅ Track visitor using env var
     axios
-      .post("https://themiahshohag.vercel.app//api/visitors/track", {
-        page: "/dashboard",
-      })
+      .post(`${API_BASE}/api/visitors/track`, { page: "/dashboard" })
       .catch(() => {});
   }, []);
 
@@ -424,11 +419,11 @@ const Dashboard = () => {
         }}
       />
 
-      {/* ── Ambient glow orbs (theme-aware) ───────────────────── */}
+      {/* ── Ambient glow orbs ─────────────────────────────────── */}
       <div className="pointer-events-none fixed top-[-20%] left-[-10%] w-[480px] h-[480px] rounded-full bg-primary/[0.04] blur-[120px] z-0" />
       <div className="pointer-events-none fixed bottom-[-20%] right-[-10%] w-[380px] h-[380px] rounded-full bg-[var(--chart-4)]/[0.05] blur-[120px] z-0" />
 
-      {/* ── Main content ─────────────────────────────────────────*/}
+      {/* ── Main content ──────────────────────────────────────── */}
       <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-8 space-y-8">
         {/* ════════════════════════════════════════════════════════
             HEADER
@@ -439,11 +434,9 @@ const Dashboard = () => {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="relative rounded-3xl border border-border bg-card backdrop-blur-xl p-6 md:p-8 overflow-hidden"
         >
-          {/* Top shimmer line */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            {/* Left: Greeting + Title */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <HiOutlineSparkles className="text-primary size-3.5" />
@@ -461,9 +454,7 @@ const Dashboard = () => {
               </p>
             </div>
 
-            {/* Right: Clock + Badges */}
             <div className="flex flex-wrap items-center gap-3">
-              {/* Live clock */}
               <div className="relative px-5 py-3 rounded-2xl border border-border bg-secondary overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
                 <p className="text-[9px] text-muted-foreground tracking-[0.3em] uppercase font-mono mb-1">
@@ -481,7 +472,6 @@ const Dashboard = () => {
                 </p>
               </div>
 
-              {/* Status pills */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 bg-[var(--chart-2)]/10 border border-[var(--chart-2)]/20 px-3 py-1.5 rounded-lg">
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--chart-2)] animate-pulse" />
@@ -518,12 +508,9 @@ const Dashboard = () => {
               <HoloCard
                 className={`h-full rounded-3xl border ${stat.borderClass} bg-card p-6 cursor-default`}
               >
-                {/* Subtle gradient wash */}
                 <div
                   className={`absolute inset-0 ${stat.bgClass} opacity-30 rounded-3xl`}
                 />
-
-                {/* Top glow line */}
                 <div
                   className="absolute top-0 left-8 right-8 h-[1px] rounded-full"
                   style={{
@@ -533,7 +520,6 @@ const Dashboard = () => {
                 />
 
                 <div className="relative z-10 flex flex-col gap-3 h-full">
-                  {/* Icon + badge / ring */}
                   <div className="flex items-start justify-between">
                     <div
                       className={`p-2.5 rounded-xl ${stat.bgClass} border ${stat.borderClass} ${stat.accentClass}`}
@@ -551,15 +537,12 @@ const Dashboard = () => {
                     )}
                   </div>
 
-                  {/* Sparkline */}
                   <Sparkline chartVar={stat.chartVar} />
 
-                  {/* Label */}
                   <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-mono">
                     {stat.label}
                   </p>
 
-                  {/* Value */}
                   <p
                     className={`text-4xl font-black tracking-tighter leading-none ${stat.accentClass}`}
                   >
@@ -570,7 +553,6 @@ const Dashboard = () => {
                     />
                   </p>
 
-                  {/* Sub-label */}
                   <p className="text-[10px] text-muted-foreground font-mono tracking-wider">
                     {loading ? (
                       <span className="inline-block w-24 h-3 bg-muted animate-pulse rounded" />
@@ -588,7 +570,7 @@ const Dashboard = () => {
             ACTIONS + LOGS
         ════════════════════════════════════════════════════════ */}
         <div className="grid xl:grid-cols-5 gap-6">
-          {/* ── Command Interface (3 cols) ──────────────────────── */}
+          {/* ── Command Interface ───────────────────────────────── */}
           <div className="xl:col-span-3 space-y-4">
             <div className="flex items-center gap-3">
               <FiTerminal className="text-primary size-3.5" />
@@ -623,15 +605,12 @@ const Dashboard = () => {
                       }}
                       className="group relative rounded-2xl border border-border bg-card p-5 flex justify-between items-center overflow-hidden cursor-pointer"
                     >
-                      {/* Hover bg wash */}
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         style={{
                           background: `linear-gradient(135deg, var(${item.chartVar})/8%, transparent 70%)`,
                         }}
                       />
-
-                      {/* Bottom border reveal */}
                       <div
                         className="absolute bottom-0 left-4 right-4 h-[1px] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"
                         style={{
@@ -679,7 +658,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* ── Live Feed / Logs (2 cols) ───────────────────────── */}
+          {/* ── Live Feed / Logs ────────────────────────────────── */}
           <div className="xl:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
               <motion.div
@@ -695,7 +674,6 @@ const Dashboard = () => {
             </div>
 
             <div className="rounded-3xl border border-border bg-card overflow-hidden">
-              {/* Terminal title bar */}
               <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-secondary/60">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-destructive/70 hover:bg-destructive transition-colors cursor-pointer" />
@@ -714,7 +692,6 @@ const Dashboard = () => {
                 </motion.span>
               </div>
 
-              {/* Log entries */}
               <div className="divide-y divide-border">
                 <AnimatePresence>
                   {LOGS.map((log, i) => (
@@ -728,7 +705,6 @@ const Dashboard = () => {
                         activeLog === i ? "bg-accent" : "hover:bg-secondary/50"
                       }`}
                     >
-                      {/* Left accent line on active */}
                       {activeLog === i && (
                         <div
                           className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full"
@@ -776,7 +752,6 @@ const Dashboard = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Footer */}
               <div className="px-5 py-3 border-t border-border bg-secondary/30">
                 <motion.button
                   whileHover={{ scale: 1.01 }}

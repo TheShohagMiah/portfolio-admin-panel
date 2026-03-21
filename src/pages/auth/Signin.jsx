@@ -16,6 +16,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LuLoader } from "react-icons/lu";
 import { useAuth } from "../../contexts/AuthContext";
 import { loginSchema } from "../../validators/auth/authValidations";
+import SocialButton from "../../components/shared/SocialButton";
 
 // ═══════════════════════════════════���═══════════════════════════
 //  INPUT CLASS — uses CSS vars, no hardcoded colors
@@ -51,25 +52,6 @@ const FormField = ({ label, error, children }) => (
       )}
     </AnimatePresence>
   </div>
-);
-
-// ═══════════════════════════════════════════════════════════════
-//  SOCIAL BUTTON
-// ═══════════════════════════════════════════════════════════════
-const SocialBtn = ({ icon, label, onClick }) => (
-  <motion.button
-    type="button"
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={onClick}
-    className="flex items-center justify-center gap-2.5 w-full py-3 px-4 rounded-xl
-      border border-border bg-secondary text-foreground text-[10px] font-black
-      uppercase tracking-widest font-mono hover:border-primary/30
-      hover:bg-secondary/80 transition-all duration-200"
-  >
-    <span className="text-base">{icon}</span>
-    {label}
-  </motion.button>
 );
 
 // ═══════════════════════════════════════════════════════════════
@@ -306,8 +288,8 @@ const SignIn = () => {
 
             {/* ── Social buttons ────────────────────────────── */}
             <div className="grid grid-cols-2 gap-3">
-              <SocialBtn icon={<FcGoogle />} label="Google" />
-              <SocialBtn icon={<FiGithub />} label="GitHub" />
+              <SocialButton icon={<FcGoogle />} label="Google" />
+              <SocialButton icon={<FiGithub />} label="GitHub" />
             </div>
 
             {/* ── Footer link ───────────────────────────────── */}

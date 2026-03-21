@@ -25,6 +25,8 @@ import {
   PROJECT_STATUSES,
 } from "../../../constants/projectConstants";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════════════════════════
@@ -178,13 +180,10 @@ const AllProjects = () => {
         ...(status && { status }),
         ...(technologies && { technologies }),
       };
-      const { data } = await axios.get(
-        "https://themiahshohag.vercel.app//api/projects",
-        {
-          params,
-          withCredentials: true,
-        },
-      );
+      const { data } = await axios.get(`${API_BASE}/api/projects`, {
+        params,
+        withCredentials: true,
+      });
       if (data.success) {
         setProjects(data.data);
         setTotal(data.total);
@@ -204,7 +203,7 @@ const AllProjects = () => {
     fetchProjects();
   }, [fetchProjects]);
 
-  // ── Sort ───────────────────────────────────────────��────────
+  // ── Sort ────────────────────────────────────────────────────
   const handleSort = (field) => {
     if (sortBy === field) setOrder((p) => (p === "asc" ? "desc" : "asc"));
     else {
@@ -228,10 +227,9 @@ const AllProjects = () => {
   const handleDeleteProject = async (id) => {
     setOpenDeleteModal(null);
     try {
-      const { data } = await axios.delete(
-        `https://themiahshohag.vercel.app//api/projects/${id}`,
-        { withCredentials: true },
-      );
+      const { data } = await axios.delete(`${API_BASE}/api/projects/${id}`, {
+        withCredentials: true,
+      });
       if (data.success) {
         toast.success(data.message);
         fetchProjects();
