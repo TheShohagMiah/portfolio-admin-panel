@@ -180,7 +180,7 @@ const Header = ({ onMenuClick }) => {
             rel="noopener noreferrer"
             className="
           relative z-10 
-          px-5 py-2 
+          px-2 py-1 md:px-4 md:py-2 
           bg-brand text-brand-fg 
           rounded-full 
           text-[10px] font-bold uppercase tracking-widest 
