@@ -155,7 +155,7 @@ const Header = ({ onMenuClick }) => {
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             placeholder="Search..."
-            className={`w-[95%] lg:w-full pl-9 pr-16 py-2 text-[12px] font-mono rounded-xl border transition-all duration-200
+            className={`w-full pl-9 pr-16 py-2 text-[12px] font-mono rounded-xl border transition-all duration-200
               bg-secondary text-foreground placeholder:text-muted-foreground/50
               focus:outline-none focus:ring-2 focus:ring-primary/20
               ${
@@ -206,7 +206,7 @@ const Header = ({ onMenuClick }) => {
       ════════════════════════════════════════════════════ */}
       <div className="flex items-center gap-2 flex-shrink-0">
         {/* Live clock — hidden on small screens */}
-        <div className="hidden md:flex flex-col items-end mr-1">
+        <div className="hidden lg:flex flex-col items-end mr-1">
           <span className="text-[11px] font-black font-mono tabular-nums text-foreground tracking-wider">
             {currentTime.toLocaleTimeString([], {
               hour: "2-digit",
