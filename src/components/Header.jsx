@@ -155,7 +155,7 @@ const Header = ({ onMenuClick }) => {
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             placeholder="Search..."
-            className={`w-full pl-9 pr-16 py-2 text-[12px] font-mono rounded-xl border transition-all duration-200
+            className={`w-[95%] lg:w-full pl-9 pr-16 py-2 text-[12px] font-mono rounded-xl border transition-all duration-200
               bg-secondary text-foreground placeholder:text-muted-foreground/50
               focus:outline-none focus:ring-2 focus:ring-primary/20
               ${
@@ -195,8 +195,8 @@ const Header = ({ onMenuClick }) => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
             </span>
-            <LuRadio size={18} className="md:hidden text-brand-fg" />
-            <span className="hidden md:block leading-none">Live site</span>
+            <LuRadio size={16} className="lg:hidden text-brand-fg" />
+            <span className="hidden lg:block leading-none">Live site</span>
           </a>
         </div>
       </div>
