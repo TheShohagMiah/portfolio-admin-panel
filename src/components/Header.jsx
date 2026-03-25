@@ -5,6 +5,7 @@ import {
   LuSunDim,
   LuBell,
   LuSearch,
+  LuRadio,
   LuUserRoundSearch,
 } from "react-icons/lu";
 import { PiGearSixBold } from "react-icons/pi";
@@ -180,7 +181,7 @@ const Header = ({ onMenuClick }) => {
             rel="noopener noreferrer"
             className="
           relative z-10 
-          px-2 py-1 md:px-4 md:py-2 
+          px-4 py-2
           bg-brand text-brand-fg 
           rounded-full 
           text-[10px] font-bold uppercase tracking-widest 
@@ -194,7 +195,8 @@ const Header = ({ onMenuClick }) => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
             </span>
-            <span className="leading-none">Live site</span>
+            <LuRadio size={18} className="md:hidden text-brand-fg" />
+            <span className="hidden md:block leading-none">Live site</span>
           </a>
         </div>
       </div>
